@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -525,13 +524,6 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!curCharacter.startsWith('bf'))
-		{
-			if (animation.curAnim.name.startsWith('sing'))
-			{
-				holdTimer += elapsed;
-			}
-
 			var dadVar:Float = 4;
 
 			if (curCharacter == 'dad')
@@ -541,7 +533,6 @@ class Character extends FlxSprite
 				dance();
 				holdTimer = 0;
 			}
-		}
 
 		switch (curCharacter)
 		{
@@ -622,6 +613,9 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+		if (!animOffsets.exists(AnimName)){
+			return;
+		}
 		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(animation.curAnim.name);
