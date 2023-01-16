@@ -17,7 +17,7 @@ class GameplayMenu extends MusicBeatState {
 	public static var op:Bool = false;
 
 	override public function create() {
-        menuItems.push(CoolUtil.coolStringFile('data/gameplayOptions').toString());
+		menuItems.push(CoolUtil.coolStringFile('data/gameplayOptions').toString());
 
 		var bg = new FlxSprite(0, 0, 'assets/images/menuDesat.png');
 		bg.color = 0x424242;
@@ -25,10 +25,10 @@ class GameplayMenu extends MusicBeatState {
 		add(bg);
 
 		optionText = new FlxText(0, 674, 0, '');
-		optionText.setFormat('assets/fonts/vcr.otf',40, FlxColor.WHITE, null, OUTLINE, FlxColor.BLACK, false);
-        optionText.scrollFactor.set();
-        optionText.screenCenter(X);
-        optionText.updateHitbox();
+		optionText.setFormat('assets/fonts/vcr.otf', 40, FlxColor.WHITE, null, OUTLINE, FlxColor.BLACK, false);
+		optionText.scrollFactor.set();
+		optionText.screenCenter(X);
+		optionText.updateHitbox();
 		add(optionText);
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
@@ -73,6 +73,7 @@ class GameplayMenu extends MusicBeatState {
 						gt = true;
 				}
 			case 'Opponent Play':
+
 				optionText.text = 'Opponent Play: $op';
 				if (accepted) {
 					if (!op)
@@ -81,7 +82,8 @@ class GameplayMenu extends MusicBeatState {
 						op = false;
 				}
 			default:
-                optionText.text = 'nulloption';
+				optionText.text = 'nulloption';
+                
 				if (accepted) {
 					trace('you got a null option');
 				}
