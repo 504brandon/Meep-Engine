@@ -1187,7 +1187,7 @@ class PlayState extends MusicBeatState {
 		if (FlxG.keys.justPressed.SEVEN) {
 			FlxG.switchState(new ChartingState());
 		}
-		
+
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.85)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.85)));
 
@@ -1360,9 +1360,7 @@ class PlayState extends MusicBeatState {
 				// gitaroo man easter egg
 				FlxG.switchState(new GitarooPause());
 			} else
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-
-			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				openSubState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
 		if (unspawnNotes[0] != null) {
@@ -1729,7 +1727,7 @@ class PlayState extends MusicBeatState {
 										inIgnoreList = true;
 								}
 								if (!inIgnoreList)
-									badNoteCheck();
+									badNote();
 							}
 						}
 					} else if (possibleNotes[0].noteData == possibleNotes[1].noteData) {
@@ -1743,35 +1741,14 @@ class PlayState extends MusicBeatState {
 				{
 					noteCheck(controlArray[daNote.noteData], daNote);
 				}
-				/* 
-					if (controlArray[daNote.noteData])
-						goodNoteHit(daNote);
-				 */
-				// trace(daNote.noteData);
-				/* 
-					switch (daNote.noteData)
-					{
-						case 2: // NOTES YOU JUST PRESSED
-							if (upP || rightP || downP || leftP)
-								noteCheck(upP, daNote);
-						case 3:
-							if (upP || rightP || downP || leftP)
-								noteCheck(rightP, daNote);
-						case 1:
-							if (upP || rightP || downP || leftP)
-								noteCheck(downP, daNote);
-						case 0:
-							if (upP || rightP || downP || leftP)
-								noteCheck(leftP, daNote);
-					}
-				 */
+
 				if (daNote.wasGoodHit) {
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
 				}
 			} else {
-				badNoteCheck();
+				badNote();
 			}
 		}
 
@@ -1870,35 +1847,40 @@ class PlayState extends MusicBeatState {
 		}
 	}
 
-	function badNoteCheck() {
-		// just double pasting this shit cuz fuk u
-		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
-		if (leftP)
-			noteMiss(0);
-		if (downP)
-			noteMiss(1);
-		if (upP)
-			noteMiss(2);
-		if (rightP)
-			noteMiss(3);
-	}
+	function badNote()
+		{
+			// just double pasting this shit cuz fuk u
+			// REDO THIS SYSTEM!
+			var leftP = controls.LEFT_P;
+			var downP = controls.DOWN_P;
+			var upP = controls.UP_P;
+			var rightP = controls.RIGHT_P;
+	
+			if (leftP)
+				noteMiss(0);
+			if (downP)
+				noteMiss(1);
+			if (upP)
+				noteMiss(2);
+			if (rightP)
+				noteMiss(3);
+		}
+	
 
 	function noteCheck(keyP:Bool, note:Note):Void {
 		if (keyP)
 			goodNoteHit(note);
 		else {
-			badNoteCheck();
+			badNote();
 		}
 	}
 
-	function goodNoteHit(note:Note):Void {
-		if (!note.wasGoodHit) {
-			if (!note.isSustainNote) {
+	function goodNoteHit(note:Note):Void
+	{
+		if (!note.wasGoodHit)
+		{
+			if (!note.isSustainNote)
+			{
 				popUpScore(note.strumTime);
 				combo += 1;
 			}
@@ -1908,7 +1890,8 @@ class PlayState extends MusicBeatState {
 			else
 				health += 0.004;
 
-			switch (note.noteData) {
+			switch (note.noteData)
+			{
 				case 0:
 					boyfriend.playAnim('singLEFT', true);
 				case 1:
@@ -1919,8 +1902,10 @@ class PlayState extends MusicBeatState {
 					boyfriend.playAnim('singRIGHT', true);
 			}
 
-			playerStrums.forEach(function(spr:FlxSprite) {
-				if (Math.abs(note.noteData) == spr.ID) {
+			playerStrums.forEach(function(spr:FlxSprite)
+			{
+				if (Math.abs(note.noteData) == spr.ID)
+				{
 					spr.animation.play('confirm', true);
 				}
 			});
@@ -1928,13 +1913,15 @@ class PlayState extends MusicBeatState {
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
-			if (!note.isSustainNote) {
+			if (!note.isSustainNote)
+			{
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();
 			}
 		}
 	}
+
 
 	var fastCarCanDrive:Bool = true;
 
