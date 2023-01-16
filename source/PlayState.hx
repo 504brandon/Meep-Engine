@@ -1,5 +1,6 @@
 package;
 
+import options.GameplayMenu;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -121,6 +122,8 @@ class PlayState extends MusicBeatState {
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
+
+	var altAnim:String = "";
 
 	override public function create() {
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -815,14 +818,14 @@ class PlayState extends MusicBeatState {
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready.png', "set.png", "go.png"]);
 			introAssets.set('school', [
-				'weeb/pixelUI/ready-pixel.png',
-				'weeb/pixelUI/set-pixel.png',
-				'weeb/pixelUI/date-pixel.png'
+				'ready-pixel.png',
+				'set-pixel.png',
+				'/intro/date-pixel.png'
 			]);
 			introAssets.set('schoolEvil', [
-				'weeb/pixelUI/ready-pixel.png',
-				'weeb/pixelUI/set-pixel.png',
-				'weeb/pixelUI/date-pixel.png'
+				'ready-pixel.png',
+				'set-pixel.png',
+				'intro/date-pixel.png'
 			]);
 
 			var introAlts:Array<String> = introAssets.get('default');
@@ -840,7 +843,7 @@ class PlayState extends MusicBeatState {
 				case 0:
 					FlxG.sound.play('assets/sounds/intro3' + altSuffix + TitleState.soundExt, 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[0]);
+					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/maingame/intro/' + introAlts[0]);
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
@@ -857,7 +860,7 @@ class PlayState extends MusicBeatState {
 					});
 					FlxG.sound.play('assets/sounds/intro2' + altSuffix + TitleState.soundExt, 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[1]);
+					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/maingame/intro/' + introAlts[1]);
 					set.scrollFactor.set();
 
 					if (curStage.startsWith('school'))
@@ -873,7 +876,7 @@ class PlayState extends MusicBeatState {
 					});
 					FlxG.sound.play('assets/sounds/intro1' + altSuffix + TitleState.soundExt, 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[2]);
+					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/maingame/intro/' + introAlts[2]);
 					go.scrollFactor.set();
 
 					if (curStage.startsWith('school'))
@@ -951,7 +954,10 @@ class PlayState extends MusicBeatState {
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3) {
+				if (songNotes[1] < 4 && GameplayMenu.op) {
+					gottaHitNote = !section.mustHitSection;
+				}	
+				else if (songNotes[1] > 3) {
 					gottaHitNote = !section.mustHitSection;
 				}
 
@@ -1012,7 +1018,7 @@ class PlayState extends MusicBeatState {
 
 			switch (curStage) {
 				case 'school' | 'schoolEvil':
-					babyArrow.loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
+					babyArrow.loadGraphic('assets/images/ui/maingame/arrows/arrows-pixel.png', true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
 					babyArrow.animation.add('blue', [5]);
@@ -1046,7 +1052,7 @@ class PlayState extends MusicBeatState {
 					}
 
 				default:
-					babyArrow.frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
+					babyArrow.frames = FlxAtlasFrames.fromSparrow('assets/images/ui/maingame/arrows/NOTE_assets.png', 'assets/images/ui/maingame/arrows/NOTE_assets.xml');
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
@@ -1400,14 +1406,25 @@ class PlayState extends MusicBeatState {
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
 
-					var altAnim:String = "";
-
 					if (SONG.notes[Math.floor(curStep / 16)] != null) {
 						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
 
-					switch (Math.abs(daNote.noteData)) {
+					if (GameplayMenu.op){
+						switch (Math.abs(daNote.noteData)) {
+							case 0:
+								boyfriend.playAnim('singLEFT', true);
+							case 1:
+								boyfriend.playAnim('singDOWN', true);
+							case 2:
+								boyfriend.playAnim('singUP', true);
+							case 3:
+								boyfriend.playAnim('singRIGHT', true);
+						}	
+					}
+					else{
+						switch (Math.abs(daNote.noteData)) {
 						case 0:
 							dad.playAnim('singLEFT' + altAnim, true);
 						case 1:
@@ -1417,6 +1434,7 @@ class PlayState extends MusicBeatState {
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
+				}
 
 					dad.holdTimer = 0;
 
@@ -1439,6 +1457,8 @@ class PlayState extends MusicBeatState {
 					} else {
 						if (daNote.tooLate || !daNote.wasGoodHit) {
 							health -= 0.0475;
+							combo = 0;
+							songScore -= 10;
 							vocals.volume = 0;
 						}
 
@@ -1570,16 +1590,13 @@ class PlayState extends MusicBeatState {
 			else if (combo > 4)
 				daRating = 'bad';
 		 */
-
-		var pixelShitPart1:String = "";
-		var pixelShitPart2:String = '';
+		var pixel:String = '';
 
 		if (curStage.startsWith('school')) {
-			pixelShitPart1 = 'weeb/pixelUI/';
-			pixelShitPart2 = '-pixel';
+			pixel = '-pixel';
 		}
 
-		rating.loadGraphic('assets/images/' + pixelShitPart1 + daRating + pixelShitPart2 + ".png");
+		rating.loadGraphic('assets/images/ui/maingame/ratings/' + daRating + pixel + ".png");
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -1587,7 +1604,7 @@ class PlayState extends MusicBeatState {
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'combo' + pixelShitPart2 + '.png');
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/maingame/ratings/' + 'combo' + pixel + '.png');
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
@@ -1617,7 +1634,7 @@ class PlayState extends MusicBeatState {
 
 		var daLoop:Int = 0;
 		for (i in seperatedScore) {
-			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2 + '.png');
+			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/maingame/ratings/' + 'num' + i + pixel + '.png');
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
@@ -1636,6 +1653,9 @@ class PlayState extends MusicBeatState {
 
 			if (combo >= 10 || combo == 0)
 				add(numScore);
+
+			if (combo > 9)
+				add(comboSpr);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween) {
@@ -1814,7 +1834,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	function noteMiss(direction:Int = 1):Void {
-		if (!boyfriend.stunned) {
+		if (!boyfriend.stunned && !GameplayMenu.gt) {
 			health -= 0.04;
 			if (combo > 5) {
 				gf.playAnim('sad');
@@ -1889,7 +1909,19 @@ class PlayState extends MusicBeatState {
 				health += 0.023;
 			else
 				health += 0.004;
-
+			if (GameplayMenu.op){
+				switch (Math.abs(note.noteData)) {
+					case 0:
+						dad.playAnim('singLEFT', true);
+					case 1:
+						dad.playAnim('singDOWN', true);
+					case 2:
+						dad.playAnim('singUP', true);
+					case 3:
+						dad.playAnim('singRIGHT', true);
+				}	
+			}
+			else{
 			switch (note.noteData)
 			{
 				case 0:
@@ -1901,6 +1933,7 @@ class PlayState extends MusicBeatState {
 				case 3:
 					boyfriend.playAnim('singRIGHT', true);
 			}
+		}
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{

@@ -44,6 +44,8 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		FlxG.save.bind('Funkin Meep', 'meepers');
+
 		#if polymod
 		polymod.Polymod.init({
 			modRoot: "mods",
@@ -60,6 +62,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
+		options.SettingConfigs.loadsettings();
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -67,8 +70,6 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		super.create();
-
-		FlxG.save.bind('funkinmeep', 'meepers');
 
 		Highscore.load();
 
